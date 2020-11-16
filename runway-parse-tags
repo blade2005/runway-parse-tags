@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+import argparse
+
+import yaml
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('runway')
+    return vars(parser.parse_args())
+
+
+def main():
+    args = parse_args()
+    tags = set()
+    with open(args['runway']) as stream:
+        data = yaml.load(stream, Loader=yaml.CLoader)
+        for deployment in data.get('deployments'):
+            for module in deployment['modules']:
+                if isinstance(module, dict):
+                    for tag in module.get('tags', []):
+                        tags.add(tag)
+    print('Available Tags:')
+    print('\n'.join(sorted(tags)))
+
+
+if __name__ == '__main__':
+    main()
